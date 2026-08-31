@@ -1,28 +1,43 @@
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
-.angular/
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
+# dependencies
+node_modules/
 
-# Environment files
-/.env
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
 
-# Angular CLI and build artefacts
-/.angular-cli.json
-/.ng/
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
-# TypeScript cache
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
 *.tsbuildinfo
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+app-example
+
+# generated native folders
+/ios
+/android
