@@ -1,26 +1,48 @@
+import cms from "@/mocks/cms.json";
 import { useFonts } from "expo-font";
 import { StyleSheet, Text, View } from "react-native";
-import { Controls } from "./controls";
-import { SpeedData } from "./speedData";
+import { Controls } from "../components/home/controls";
+import { SpeedData } from "../components/home/speedData";
 
 export default function HomeScreen() {
   const [fontsLoaded] = useFonts({
     Orbitron: require("../assets/fonts/Orbitron.ttf"),
   });
+  const homeCms = cms.home;
+
+  function formatTime(totalSeconds: number): string {
+    if (!totalSeconds) {
+      return "99:99:99";
+    }
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return [hours, minutes, seconds]
+      .map((value) => String(value).padStart(2, "0"))
+      .join(":");
+  }
   return (
     <View style={styles.container}>
       <View style={styles.flexContainerVertical}>
-        <Text style={[styles.text, styles.time]}>00:35:00</Text>
-        <Text style={[styles.text, styles.speed]}>15,06</Text>
-        <Text style={[styles.text, styles.label]}>Speed (km/h)</Text>
+        <Text style={[styles.text, styles.time]}>{formatTime(2486)}</Text>
+        <Text style={[styles.text, styles.speed]}>{homeCms.speed}</Text>
+        <Text style={[styles.text, styles.label]}>{homeCms.sleepLabel}</Text>
         <View style={styles.flexContainer}>
           <View style={styles.subContainerOne}>
-            <Text style={[styles.text, styles.dataText]}>12,00</Text>
-            <Text style={[styles.text, styles.label]}>Distance (km)</Text>
+            <Text style={[styles.text, styles.dataText]}>
+              {homeCms.distance}
+            </Text>
+            <Text style={[styles.text, styles.label]}>
+              {homeCms.distanceLabel}
+            </Text>
           </View>
           <View style={styles.subContainerOne}>
-            <Text style={[styles.text, styles.dataText]}>102</Text>
-            <Text style={[styles.text, styles.label]}>Heart Rate (bpm)</Text>
+            <Text style={[styles.text, styles.dataText]}>{homeCms.heart}</Text>
+            <Text style={[styles.text, styles.label]}>
+              {homeCms.heartLabel}
+            </Text>
           </View>
         </View>
         <SpeedData />

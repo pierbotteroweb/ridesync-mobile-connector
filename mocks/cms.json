@@ -1,0 +1,22 @@
+{
+  "controls": {
+    "start": "Start",
+    "pause": "Pause",
+    "finish": "Finish"
+  },
+  "speedData": {
+    "mockedAvgSpeedData": "14,00",
+    "mockedMaxSpeedData": "15,00",
+    "avgSpeedLabel": "Avg Speed (km/h)",
+    "maxSpeedLabel": "Max Speed (km/h)"
+  },
+  "home": {
+    "time": "00:35:00",
+    "speed": "15,06",
+    "sleepLabel": "Speed (km/h)",
+    "distance": "12,00",
+    "distanceLabel": "Distance (km)",
+    "heart": "102",
+    "heartLabel": "Heart Rate (bpm)"
+  }
+}
