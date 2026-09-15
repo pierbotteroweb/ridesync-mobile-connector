@@ -1,18 +1,21 @@
 import cms from "@/mocks/cms.json";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import Entypo from "@expo/vector-icons/Entypo";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Pressable, StyleSheet, View } from "react-native";
 
 export function Controls() {
   let { start, pause, finish } = cms.controls;
   return (
     <View style={styles.flexContainer}>
       <Pressable style={styles.controlButton}>
-        <Text style={styles.buttonText}>{start}</Text>
+        <Entypo name="controller-play" size={72} color="black" />
       </Pressable>
       <Pressable style={styles.controlButton}>
-        <Text style={styles.buttonText}>{pause}</Text>
+        <FontAwesome name="pause" size={52} color="black" />
       </Pressable>
       <Pressable style={styles.controlButton}>
-        <Text style={styles.buttonText}>{finish}</Text>
+        <MaterialCommunityIcons name="flag-checkered" size={52} color="black" />
       </Pressable>
     </View>
   );
@@ -25,7 +28,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     textAlign: "center",
-    marginTop: 100,
+    marginTop: 20,
   },
 
   controlButton: {
