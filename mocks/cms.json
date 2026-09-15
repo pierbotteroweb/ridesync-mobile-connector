@@ -1,0 +1,21 @@
+{
+  "speedData": {
+    "mockedAvgSpeedData": "14,00",
+    "mockedMaxSpeedData": "15,00",
+    "avgSpeedLabel": "Avg Speed (km/h)",
+    "maxSpeedLabel": "Max Speed (km/h)"
+  },
+  "home": {
+    "speed": "9,06",
+    "speedLabel": "Speed (km/h)",
+    "distance": "12,00",
+    "distanceLabel": "Distance (km)",
+    "heart": "102",
+    "heartLabel": "Heart Rate (bpm)"
+  },
+  "sensors": {
+    "speedSensorLabel": "Speed",
+    "cadenceSensorLabel": "Cadence",
+    "heartBeatSensorLabel": "Heart Beat"
+  }
+}
