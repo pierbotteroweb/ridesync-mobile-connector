@@ -60,10 +60,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
 
-  title: {
-    fontWeight: "bold",
-  },
-
   time: {
     fontSize: 70,
     fontFamily: "Orbitron",
