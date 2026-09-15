@@ -40,10 +40,4 @@ const styles = StyleSheet.create({
     fontSize: 30,
     backgroundColor: "orange",
   },
-
-  buttonText: {
-    color: "black",
-    fontSize: 20,
-    fontWeight: 700,
-  },
 });
