@@ -1,5 +1,4 @@
 import cms from "@/mocks/cms.json";
-import { useFonts } from "expo-font";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { interval, take } from "rxjs";
@@ -18,9 +17,6 @@ export function MainData() {
       .map((value) => String(value).padStart(2, "0"))
       .join(":");
   }
-  const [fontsLoaded] = useFonts({
-    Orbitron: require("../../assets/fonts/Orbitron.ttf"),
-  });
   const homeCms = cms.home;
 
   const [time, setTime] = useState(1000);
@@ -40,7 +36,7 @@ export function MainData() {
     <View style={styles.flexContainerVertical}>
       <Text style={[styles.text, styles.time]}>{formatTime(time)}</Text>
       <Text style={[styles.text, styles.speed]}>{homeCms.speed}</Text>
-      <Text style={[styles.text, styles.label]}>{homeCms.sleepLabel}</Text>
+      <Text style={[styles.text, styles.label]}>{homeCms.speedLabel}</Text>
       <View style={styles.flexContainer}>
         <View style={styles.subContainerOne}>
           <Text style={[styles.text, styles.dataText]}>{homeCms.distance}</Text>

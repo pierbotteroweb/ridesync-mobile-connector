@@ -10,7 +10,7 @@ export function SensorsState() {
 
   const [sensorState, setSensorState] = useState({
     speed: false,
-    cadence: true,
+    cadence: false,
     heartBeat: true,
   });
 

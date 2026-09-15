@@ -1,11 +1,9 @@
-import cms from "@/mocks/cms.json";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Pressable, StyleSheet, View } from "react-native";
 
 export function Controls() {
-  let { start, pause, finish } = cms.controls;
   return (
     <View style={styles.flexContainer}>
       <Pressable style={styles.controlButton}>
