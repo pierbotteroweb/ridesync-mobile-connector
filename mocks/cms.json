@@ -12,11 +12,16 @@
   },
   "home": {
     "time": "00:35:00",
-    "speed": "15,06",
+    "speed": "9,06",
     "sleepLabel": "Speed (km/h)",
     "distance": "12,00",
     "distanceLabel": "Distance (km)",
     "heart": "102",
     "heartLabel": "Heart Rate (bpm)"
+  },
+  "sensors": {
+    "speedSensorLabel": "Speed",
+    "cadenceSensorLabel": "Cadence",
+    "heartBeatSensorLabel": "Heart Beat"
   }
 }
