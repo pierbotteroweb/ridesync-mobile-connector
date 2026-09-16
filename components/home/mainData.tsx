@@ -1,7 +1,9 @@
 import cms from "@/mocks/cms.json";
+import { useRideStore } from "@/store/rideStore";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { interval, take } from "rxjs";
+import { useStore } from "zustand";
 
 export function MainData() {
   function formatTime(totalSeconds: number): string {
@@ -19,6 +21,8 @@ export function MainData() {
   }
   const homeCms = cms.home;
 
+  const speed = useStore(useRideStore, (state) => state.speed);
+
   const [time, setTime] = useState(1000);
 
   useEffect(() => {
@@ -35,7 +39,7 @@ export function MainData() {
   return (
     <View style={styles.flexContainerVertical}>
       <Text style={[styles.text, styles.time]}>{formatTime(time)}</Text>
-      <Text style={[styles.text, styles.speed]}>{homeCms.speed}</Text>
+      <Text style={[styles.text, styles.speed]}>{speed}</Text>
       <Text style={[styles.text, styles.label]}>{homeCms.speedLabel}</Text>
       <View style={styles.flexContainer}>
         <View style={styles.subContainerOne}>
