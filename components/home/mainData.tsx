@@ -1,6 +1,6 @@
 import cms from "@/mocks/cms.json";
 import { useRideStore } from "@/store/rideStore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { interval, take } from "rxjs";
 import { useStore } from "zustand";
@@ -22,14 +22,14 @@ export function MainData() {
   const homeCms = cms.home;
 
   const speed = useStore(useRideStore, (state) => state.speed);
-
-  const [time, setTime] = useState(1000);
+  const time = useStore(useRideStore, (state) => state.time);
+  const incrementTime = useStore(useRideStore, (state) => state.incrementTime);
 
   useEffect(() => {
     const subscription = interval(1000)
       .pipe(take(3))
       .subscribe(() => {
-        setTime((currentTime) => currentTime + 1);
+        incrementTime();
       });
 
     return () => {
