@@ -1,23 +1,22 @@
 import cms from "@/mocks/cms.json";
+import { useSensorStore } from "@/store/sensorStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Text } from "@react-navigation/elements";
-import { useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { useStore } from "zustand";
 
 export function SensorsState() {
   let { speedSensorLabel, cadenceSensorLabel, heartBeatSensorLabel } =
     cms.sensors;
 
-  const [sensorState, setSensorState] = useState({
-    speed: false,
-    cadence: false,
-    heartBeat: true,
-  });
+  const speed = useStore(useSensorStore, (state) => state.speed);
+  const cadence = useStore(useSensorStore, (state) => state.cadence);
+  const heartBeat = useStore(useSensorStore, (state) => state.heartbeat);
 
   return (
     <View style={styles.flexContainer}>
       <View style={styles.subContainerOne}>
-        {sensorState.speed ? (
+        {speed ? (
           <AntDesign name="link" size={48} color="orange" />
         ) : (
           <AntDesign name="disconnect" size={48} color="red" />
@@ -25,7 +24,7 @@ export function SensorsState() {
         <Text style={styles.label}>{speedSensorLabel}</Text>
       </View>
       <View style={styles.subContainerOne}>
-        {sensorState.cadence ? (
+        {cadence ? (
           <AntDesign name="link" size={48} color="orange" />
         ) : (
           <AntDesign name="disconnect" size={48} color="red" />
@@ -33,7 +32,7 @@ export function SensorsState() {
         <Text style={styles.label}>{cadenceSensorLabel}</Text>
       </View>
       <View style={styles.subContainerOne}>
-        {sensorState.heartBeat ? (
+        {heartBeat ? (
           <AntDesign name="link" size={48} color="orange" />
         ) : (
           <AntDesign name="disconnect" size={48} color="red" />

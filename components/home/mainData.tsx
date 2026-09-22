@@ -1,7 +1,7 @@
 import cms from "@/mocks/cms.json";
-import { useEffect, useState } from "react";
+import { useRideStore } from "@/store/rideStore";
 import { StyleSheet, Text, View } from "react-native";
-import { interval, take } from "rxjs";
+import { useStore } from "zustand";
 
 export function MainData() {
   function formatTime(totalSeconds: number): string {
@@ -19,23 +19,13 @@ export function MainData() {
   }
   const homeCms = cms.home;
 
-  const [time, setTime] = useState(1000);
+  const speed = useStore(useRideStore, (state) => state.speed);
+  const time = useStore(useRideStore, (state) => state.time);
 
-  useEffect(() => {
-    const subscription = interval(1000)
-      .pipe(take(3))
-      .subscribe(() => {
-        setTime((currentTime) => currentTime + 1);
-      });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
   return (
     <View style={styles.flexContainerVertical}>
       <Text style={[styles.text, styles.time]}>{formatTime(time)}</Text>
-      <Text style={[styles.text, styles.speed]}>{homeCms.speed}</Text>
+      <Text style={[styles.text, styles.speed]}>{speed}</Text>
       <Text style={[styles.text, styles.label]}>{homeCms.speedLabel}</Text>
       <View style={styles.flexContainer}>
         <View style={styles.subContainerOne}>
@@ -66,8 +56,8 @@ const styles = StyleSheet.create({
   },
 
   speed: {
-    fontSize: 100,
-    lineHeight: 180,
+    fontSize: 90,
+    lineHeight: 160,
     fontFamily: "Orbitron",
     transform: [{ scaleY: 1.5 }],
   },
