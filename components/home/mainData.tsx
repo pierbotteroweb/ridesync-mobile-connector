@@ -1,8 +1,6 @@
 import cms from "@/mocks/cms.json";
 import { useRideStore } from "@/store/rideStore";
-import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { interval, take } from "rxjs";
 import { useStore } from "zustand";
 
 export function MainData() {
@@ -23,19 +21,7 @@ export function MainData() {
 
   const speed = useStore(useRideStore, (state) => state.speed);
   const time = useStore(useRideStore, (state) => state.time);
-  const incrementTime = useStore(useRideStore, (state) => state.incrementTime);
 
-  useEffect(() => {
-    const subscription = interval(1000)
-      .pipe(take(3))
-      .subscribe(() => {
-        incrementTime();
-      });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
   return (
     <View style={styles.flexContainerVertical}>
       <Text style={[styles.text, styles.time]}>{formatTime(time)}</Text>
