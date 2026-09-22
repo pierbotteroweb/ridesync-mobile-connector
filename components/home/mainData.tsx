@@ -56,8 +56,8 @@ const styles = StyleSheet.create({
   },
 
   speed: {
-    fontSize: 100,
-    lineHeight: 180,
+    fontSize: 90,
+    lineHeight: 160,
     fontFamily: "Orbitron",
     transform: [{ scaleY: 1.5 }],
   },
