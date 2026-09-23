@@ -17,7 +17,11 @@ export function Controls() {
 
   return (
     <View style={styles.flexContainer}>
-      {rideStatus == "paused" || rideStatus === "idle" ? (
+      {rideStatus == "finished" ? (
+        <View style={styles.controlButton}>
+          <Entypo name="controller-play" size={72} color="grey" />
+        </View>
+      ) : rideStatus == "paused" || rideStatus === "idle" ? (
         <Pressable onPress={startRide} style={styles.controlButton}>
           <Entypo name="controller-play" size={72} color="black" />
         </Pressable>
