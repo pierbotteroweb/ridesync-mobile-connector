@@ -27,8 +27,7 @@ export const useRideStore = createStore<RideStore>((set) => ({
     },
     incrementTime: ()=>{
         set((state)=>({
-            time:  state.status == "running" ? state.time + 1 : 
-            (state.status == "paused" ? state.time : 0)
+            time:  state.time + 1
         }))
     }
 }))
