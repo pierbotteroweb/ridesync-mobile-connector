@@ -9,10 +9,10 @@ import { useStore } from "zustand";
 export function Controls() {
   const setStatus = useStore(useRideStore, (state) => state.setStatus);
   const rideStatus = useStore(useRideStore, (state) => state.status);
+  const resetRide = useStore(useRideStore, (state) => state.resetRide);
 
   const startRide = () => setStatus("running");
   const pauseRide = () => setStatus("paused");
-  const resetRide = () => setStatus("idle");
   const endRide = () => setStatus("finished");
 
   function PlayPauseButtons() {

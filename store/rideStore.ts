@@ -7,6 +7,7 @@ type RideStore = {
     time: number;
     setTime: (newTime: number) => void;
     incrementTime: ()=> void;
+    resetRide: ()=> void;
     status: RideStatus;
     setStatus: (newStatus: RideStatus) => void;
 }
@@ -18,10 +19,15 @@ export const useRideStore = createStore<RideStore>((set) => ({
     status: "idle",
     setTime: (newTime:number) => set({ time: newTime }),
     setStatus: (newStatus: RideStatus) => set({ status: newStatus }),
+    resetRide: () => {
+        set({
+            status: "idle",
+            time: 0
+        })
+    },
     incrementTime: ()=>{
         set((state)=>({
-            time:  state.status == "running" ? state.time + 1 : 
-            (state.status == "paused" ? state.time : 0)
+            time:  state.time + 1
         }))
     }
 }))
