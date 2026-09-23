@@ -15,21 +15,25 @@ export function Controls() {
   const resetRide = () => setStatus("idle");
   const endRide = () => setStatus("finished");
 
+  function PlayPauseButtons() {
+    return rideStatus == "finished" ? (
+      <View style={styles.controlButton}>
+        <Entypo name="controller-play" size={72} color="grey" />
+      </View>
+    ) : rideStatus == "paused" || rideStatus === "idle" ? (
+      <Pressable onPress={startRide} style={styles.controlButton}>
+        <Entypo name="controller-play" size={72} color="black" />
+      </Pressable>
+    ) : (
+      <Pressable onPress={pauseRide} style={styles.controlButton}>
+        <FontAwesome name="pause" size={52} color="black" />
+      </Pressable>
+    );
+  }
+
   return (
     <View style={styles.flexContainer}>
-      {rideStatus == "finished" ? (
-        <View style={styles.controlButton}>
-          <Entypo name="controller-play" size={72} color="grey" />
-        </View>
-      ) : rideStatus == "paused" || rideStatus === "idle" ? (
-        <Pressable onPress={startRide} style={styles.controlButton}>
-          <Entypo name="controller-play" size={72} color="black" />
-        </Pressable>
-      ) : (
-        <Pressable onPress={pauseRide} style={styles.controlButton}>
-          <FontAwesome name="pause" size={52} color="black" />
-        </Pressable>
-      )}
+      <PlayPauseButtons />
 
       {rideStatus === "paused" ? (
         <Pressable onPress={resetRide} style={styles.controlButton}>
