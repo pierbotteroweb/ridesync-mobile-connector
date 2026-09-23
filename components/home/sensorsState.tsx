@@ -6,12 +6,12 @@ import { StyleSheet, View } from "react-native";
 import { useStore } from "zustand";
 
 export function SensorsState() {
-  let { speedSensorLabel, cadenceSensorLabel, heartBeatSensorLabel } =
+  let { speedSensorLabel, cadenceSensorLabel, heartRateSensorLabel } =
     cms.sensors;
 
   const speed = useStore(useSensorStore, (state) => state.speed);
   const cadence = useStore(useSensorStore, (state) => state.cadence);
-  const heartBeat = useStore(useSensorStore, (state) => state.heartbeat);
+  const heartRate = useStore(useSensorStore, (state) => state.heartrate);
 
   return (
     <View style={styles.flexContainer}>
@@ -32,12 +32,12 @@ export function SensorsState() {
         <Text style={styles.label}>{cadenceSensorLabel}</Text>
       </View>
       <View style={styles.subContainerOne}>
-        {heartBeat ? (
+        {heartRate ? (
           <AntDesign name="link" size={48} color="orange" />
         ) : (
           <AntDesign name="disconnect" size={48} color="red" />
         )}
-        <Text style={styles.label}>{heartBeatSensorLabel}</Text>
+        <Text style={styles.label}>{heartRateSensorLabel}</Text>
       </View>
     </View>
   );
