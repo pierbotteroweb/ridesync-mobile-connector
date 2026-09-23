@@ -16,6 +16,6 @@
   "sensors": {
     "speedSensorLabel": "Speed",
     "cadenceSensorLabel": "Cadence",
-    "heartBeatSensorLabel": "Heart Beat"
+    "heartRateSensorLabel": "Heart Rate"
   }
 }

@@ -3,16 +3,16 @@ import { createStore } from "zustand/vanilla";
 type SensorStore = {
     speed: boolean;
     cadence: boolean;
-    heartbeat: boolean;
+    heartrate: boolean;
     switchSpeed: () => void;
     switchCadence: () => void;
-    switchHeartbeat: () => void;
+    switchHeartrate: () => void;
 }
 
 export const useSensorStore = createStore<SensorStore>((set) => ({
     speed: false,
     cadence: false,
-    heartbeat: false,
+    heartrate: false,
     switchSpeed: () => {
         set((state) => ({
             speed: !state.speed
@@ -23,9 +23,9 @@ export const useSensorStore = createStore<SensorStore>((set) => ({
             cadence: !state.cadence
         }))
     },
-    switchHeartbeat: () => {
+    switchHeartrate: () => {
         set((state) => ({
-            heartbeat: !state.heartbeat
+            heartrate: !state.heartrate
         }))
     },
 }))
