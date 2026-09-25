@@ -1,0 +1,29 @@
+feat: adiciona dados mock para simulacao do stream
+Merge pull request #4 from pierbotteroweb/feat/state-management
+feat: atualiza logica de incrementacao temporal da corrida
+feat: atualiza logica de reset para a corrida
+Merge pull request #3 from pierbotteroweb/feat/mobile-ui
+refactor: usa helper render function para retornar react element em nocomponent controls
+feat: desabilita botoes com corrida em status finished
+feat: aduciona botoes de reset e switch entre botoes start e pause
+feat: mudanca global de termo heartbeat para heartrate
+Merge pull request #2 from pierbotteroweb/feat/state-management
+style: reduz tamanho das informações de velocidade
+feat(hook): move atualização de tempo para hook externo
+feat(store): adiciona rideStatus ao Ridestore
+feature: cria sensorStore compartilhada entre components
+feature: adiciona propriedade time ao store e usa no template
+feature: state management basico usando zustand
+Merge pull request #1 from pierbotteroweb/feat/mobile-ui
+style: estilizacao nao usada removida
+refactor(template): remove recursos obsoletos
+refactor(template): remocao e ajustes recursos necessarios
+refactor(template): remove recursos obsoletos
+style: conteudo de botoes em texto substituidos por icons
+feat: novo component com status de conexao de sensores
+feat: novo component com status de conexao de sensores
+feat: novos elementos da tela componentizados e template data-binded
+chore: removendo arquivos desnecessários
+feat: layout inicial sem data bhinding
+chore: initial commit for reaqct native expo created application
+Initial commit
