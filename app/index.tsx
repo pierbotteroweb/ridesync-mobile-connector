@@ -1,12 +1,14 @@
 import { MainData } from "@/components/home/mainData";
 import { SensorsState } from "@/components/home/sensorsState";
 import { useRideTimer } from "@/hooks/useRideTimer";
+import { useTelemetry } from "@/hooks/useTelemetry";
 import { StyleSheet, View } from "react-native";
 import { Controls } from "../components/home/controls";
 import { SpeedData } from "../components/home/speedData";
 
 export default function HomeScreen() {
   useRideTimer();
+  useTelemetry();
 
   return (
     <View style={styles.container}>
