@@ -1,3 +1,4 @@
+import { TelemetrySample } from "@/domain/telemetry";
 import { createStore } from "zustand/vanilla";
 
 type RideStatus = "idle" | "running" | "paused" | "finished"
@@ -5,6 +6,7 @@ type RideStatus = "idle" | "running" | "paused" | "finished"
 type RideStore = {
     speed: number;
     time: number;
+    heartRate: number;
     setTime: (newTime: number) => void;
     incrementTime: ()=> void;
     resetRide: ()=> void;
@@ -15,6 +17,7 @@ type RideStore = {
 
 export const useRideStore = createStore<RideStore>((set) => ({
     speed: 25.30,
+    heartRate:99,
     time: 1000,
     status: "idle",
     setTime: (newTime:number) => set({ time: newTime }),
@@ -29,5 +32,11 @@ export const useRideStore = createStore<RideStore>((set) => ({
         set((state)=>({
             time:  state.time + 1
         }))
+    },
+
+    applyTelemetry: (sample:TelemetrySample)=>{
+        
     }
+
+
 }))

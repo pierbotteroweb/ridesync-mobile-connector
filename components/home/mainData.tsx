@@ -21,6 +21,7 @@ export function MainData() {
 
   const speed = useStore(useRideStore, (state) => state.speed);
   const time = useStore(useRideStore, (state) => state.time);
+  const heartRate = useStore(useRideStore, (state) => state.heartRate);
 
   return (
     <View style={styles.flexContainerVertical}>
@@ -35,7 +36,7 @@ export function MainData() {
           </Text>
         </View>
         <View style={styles.subContainerOne}>
-          <Text style={[styles.text, styles.dataText]}>{homeCms.heart}</Text>
+          <Text style={[styles.text, styles.dataText]}>{heartRate}</Text>
           <Text style={[styles.text, styles.label]}>{homeCms.heartLabel}</Text>
         </View>
       </View>
