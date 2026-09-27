@@ -35,6 +35,10 @@ export const useRideStore = createStore<RideStore>((set) => ({
     },
 
     applyTelemetry: (sample:TelemetrySample)=>{
+        set({
+            speed: sample.speed,
+            heartRate: sample.heartRate
+        })
         
     }
 
