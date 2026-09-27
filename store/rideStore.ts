@@ -12,6 +12,7 @@ type RideStore = {
     resetRide: ()=> void;
     status: RideStatus;
     setStatus: (newStatus: RideStatus) => void;
+    applyTelemetry: (sample: TelemetrySample)=> void;
 }
 
 
