@@ -7,15 +7,12 @@ import { useStore } from "zustand";
 export function useTelemetry(){
 
     const status = useStore(useRideStore, (state) => state.status)
-    const telemetrySourceRef = useRef<MockTelemetrySource | null>(null);
     const telemetryServiceRef = useRef<RideTelemetryService | null>(null);
     const previousStatusRef = useRef(status);
 
     useEffect(() => {
 
         const mockTelemetrySource = new MockTelemetrySource()
-
-        telemetrySourceRef.current = mockTelemetrySource
 
         const telemetryService = new RideTelemetryService(mockTelemetrySource)
 
