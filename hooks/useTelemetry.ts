@@ -30,22 +30,6 @@ export function useTelemetry(){
     },[])
 
     useEffect(() => {
-
-        const telemetrySource = telemetrySourceRef.current
-
-        if (!telemetrySource) return
-
-        if (status === "paused"){
-            telemetrySource.pause();
-        }
-
-        if (status === "running"){
-            telemetrySource.resume();
-        }
-
-    },[status])
-
-    useEffect(() => {
         const telemetryService = telemetryServiceRef.current
         const previousStatus = previousStatusRef.current
 
@@ -63,9 +47,8 @@ export function useTelemetry(){
             telemetryService.resume();
         }
 
-        if (previousStatus === "running" || previousStatus === "paused" 
-            && status == "finished"
-        ) {
+        if ((previousStatus === "running" || previousStatus === "paused")
+            && status == "finished") {
             telemetryService.finish();
         }
 
