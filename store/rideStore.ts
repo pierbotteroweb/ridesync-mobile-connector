@@ -26,7 +26,9 @@ export const useRideStore = createStore<RideStore>((set) => ({
     resetRide: () => {
         set({
             status: "idle",
-            time: 0
+            time: 0,
+            speed: 0,
+            heartRate: 0
         })
     },
     incrementTime: ()=>{
