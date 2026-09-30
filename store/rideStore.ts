@@ -17,16 +17,18 @@ type RideStore = {
 
 
 export const useRideStore = createStore<RideStore>((set) => ({
-    speed: 25.30,
-    heartRate:99,
-    time: 1000,
+    speed: 0,
+    heartRate:0,
+    time: 0,
     status: "idle",
     setTime: (newTime:number) => set({ time: newTime }),
     setStatus: (newStatus: RideStatus) => set({ status: newStatus }),
     resetRide: () => {
         set({
             status: "idle",
-            time: 0
+            time: 0,
+            speed: 0,
+            heartRate: 0
         })
     },
     incrementTime: ()=>{

@@ -2,5 +2,7 @@ import { TelemetrySample } from "@/domain/telemetry";
 import { Observable } from "rxjs";
 
 export interface TelemetrySource {
-    stream(): Observable<TelemetrySample>
+    stream(): Observable<TelemetrySample>;
+    pause(): void;
+    resume(): void;
 }
