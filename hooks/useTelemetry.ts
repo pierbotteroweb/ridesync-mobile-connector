@@ -49,6 +49,10 @@ export function useTelemetry(){
             telemetryService.finish();
         }
 
+        if (previousStatus === "paused" && status === "idle") {
+            telemetryService.reset();
+        }
+
         console.log(`${previousStatus} -> ${status}`)
 
         previousStatusRef.current = status

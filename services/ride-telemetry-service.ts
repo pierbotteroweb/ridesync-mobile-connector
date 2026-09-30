@@ -7,7 +7,16 @@ export class RideTelemetryService {
 
     private subscription: Subscription | null = null
 
+    private stop():void {
+        this.subscription?.unsubscribe()
+        this.subscription = null
+    }
+
     start(): void {
+        
+        if (this.subscription && !this.subscription.closed) {
+            return;
+        }
         this.telemetrySource.resume()
         
         this.subscription = this.telemetrySource.stream().subscribe(sample => {
@@ -23,9 +32,13 @@ export class RideTelemetryService {
     }
 
     finish():void{
-        this.subscription?.unsubscribe()
-        this.subscription = null
+        this.stop()
     }
+
+    reset():void{
+        this.stop()
+    }
+    
 
 
 }
