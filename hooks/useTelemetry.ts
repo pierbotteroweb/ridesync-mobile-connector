@@ -18,12 +18,6 @@ export function useTelemetry(){
 
         telemetryServiceRef.current = telemetryService
 
-        // const subscription = telemetryService.start()
-
-        // return ()=>{
-        //     subscription.unsubscribe()
-        // }
-
     },[])
 
     useEffect(() => {
@@ -52,8 +46,6 @@ export function useTelemetry(){
         if (previousStatus === "paused" && status === "idle") {
             telemetryService.reset();
         }
-
-        console.log(`${previousStatus} -> ${status}`)
 
         previousStatusRef.current = status
     },[status])
