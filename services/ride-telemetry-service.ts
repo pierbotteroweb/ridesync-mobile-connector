@@ -8,6 +8,8 @@ export class RideTelemetryService {
     private subscription: Subscription | null = null
 
     start(): void {
+        this.telemetrySource.resume()
+        
         this.subscription = this.telemetrySource.stream().subscribe(sample => {
             useRideStore.getState().applyTelemetry(sample);
         });
