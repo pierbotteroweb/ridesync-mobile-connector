@@ -35,7 +35,7 @@ export function Controls() {
     <View style={styles.flexContainer}>
       <PlayPauseButtons />
 
-      {rideStatus === "paused" ? (
+      {rideStatus === "paused" || rideStatus === "finished" ? (
         <Pressable onPress={resetRide} style={styles.controlButton}>
           <MaterialIcons name="restart-alt" size={64} color="black" />
         </Pressable>
