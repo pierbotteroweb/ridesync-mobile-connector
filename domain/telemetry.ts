@@ -1,4 +1,5 @@
 export type TelemetrySample = {
     speed:number,
-    heartRate: number
+    heartRate: number,
+    cadence:number
 } 
