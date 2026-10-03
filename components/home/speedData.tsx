@@ -1,18 +1,22 @@
 import cms from "@/mocks/cms.json";
+import { useRideStore } from "@/store/rideStore";
 import { StyleSheet, Text, View } from "react-native";
+import { useStore } from "zustand";
 
 export function SpeedData() {
-  let { avgSpeedLabel, maxSpeedLabel, mockedAvgSpeedData, mockedMaxSpeedData } =
-    cms.speedData;
+  const avgSpeed = useStore(useRideStore, (state) => state.avgSpeed);
+  const maxSpeed = useStore(useRideStore, (state) => state.maxSpeed);
+
+  let { avgSpeedLabel, maxSpeedLabel } = cms.speedData;
 
   return (
     <View style={styles.flexContainer}>
       <View style={styles.subContainerOne}>
-        <Text style={[styles.text, styles.dataText]}>{mockedAvgSpeedData}</Text>
+        <Text style={[styles.text, styles.dataText]}>{avgSpeed}</Text>
         <Text style={[styles.text, styles.label]}>{avgSpeedLabel}</Text>
       </View>
       <View style={styles.subContainerOne}>
-        <Text style={[styles.text, styles.dataText]}>{mockedMaxSpeedData}</Text>
+        <Text style={[styles.text, styles.dataText]}>{maxSpeed}</Text>
         <Text style={[styles.text, styles.label]}>{maxSpeedLabel}</Text>
       </View>
     </View>

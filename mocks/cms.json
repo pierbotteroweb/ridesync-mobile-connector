@@ -6,9 +6,7 @@
     "maxSpeedLabel": "Max Speed (km/h)"
   },
   "home": {
-    "speed": "9,06",
     "speedLabel": "Speed (km/h)",
-    "distance": "12,00",
     "distanceLabel": "Distance (km)",
     "heartLabel": "Heart Rate (bpm)"
   },
