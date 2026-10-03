@@ -5,10 +5,17 @@ type RideStatus = "idle" | "running" | "paused" | "finished"
 
 type RideStore = {
     speed: number;
+    avgSpeed: number;
+    maxSpeed: number;
+    speedRegisters: number[];
     time: number;
     heartRate: number;
+    distance: number;
     setTime: (newTime: number) => void;
     incrementTime: ()=> void;
+    findAverageSpeed: ()=> void;
+    findMaxSpeed: ()=> void;
+    calculateDistance: ()=> void;
     resetRide: ()=> void;
     status: RideStatus;
     setStatus: (newStatus: RideStatus) => void;
@@ -18,8 +25,12 @@ type RideStore = {
 
 export const useRideStore = createStore<RideStore>((set) => ({
     speed: 0,
+    avgSpeed: 0,
+    maxSpeed: 0,
+    speedRegisters: [],
     heartRate:0,
     time: 0,
+    distance: 0,
     status: "idle",
     setTime: (newTime:number) => set({ time: newTime }),
     setStatus: (newStatus: RideStatus) => set({ status: newStatus }),
@@ -28,6 +39,10 @@ export const useRideStore = createStore<RideStore>((set) => ({
             status: "idle",
             time: 0,
             speed: 0,
+            avgSpeed: 0,
+            maxSpeed: 0,
+            speedRegisters: [],
+            distance: 0,
             heartRate: 0
         })
     },
@@ -38,12 +53,34 @@ export const useRideStore = createStore<RideStore>((set) => ({
     },
 
     applyTelemetry: (sample:TelemetrySample)=>{
-        set({
+        set((state)=>({
             speed: sample.speed,
-            heartRate: sample.heartRate
-        })
-        
-    }
+            heartRate: sample.heartRate,
+            speedRegisters: [...state.speedRegisters, sample.speed]
+        }))
+    },
+
+    findAverageSpeed: () => {
+        set((state)=>({
+            avgSpeed: Number((state.speedRegisters.length
+            ? state.speedRegisters.reduce((sum, value) => sum + value, 0) / state.speedRegisters.length
+            : 0).toFixed(1))
+        }))
+
+    },
+
+    findMaxSpeed: () => {
+        set((state) => ({
+            maxSpeed: Number((Math.max(...state.speedRegisters)).toFixed(2)),
+        }));
+
+    },
+    calculateDistance: () => {
+        set((state) => ({
+            distance: Number((state.distance + state.speed / 3600).toFixed(2)),
+        }));
+    },
+
 
 
 }))

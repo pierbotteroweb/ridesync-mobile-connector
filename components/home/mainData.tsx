@@ -22,6 +22,7 @@ export function MainData() {
   const speed = useStore(useRideStore, (state) => state.speed);
   const time = useStore(useRideStore, (state) => state.time);
   const heartRate = useStore(useRideStore, (state) => state.heartRate);
+  const distance = useStore(useRideStore, (state) => state.distance);
 
   return (
     <View style={styles.flexContainerVertical}>
@@ -30,7 +31,7 @@ export function MainData() {
       <Text style={[styles.text, styles.label]}>{homeCms.speedLabel}</Text>
       <View style={styles.flexContainer}>
         <View style={styles.subContainerOne}>
-          <Text style={[styles.text, styles.dataText]}>{homeCms.distance}</Text>
+          <Text style={[styles.text, styles.dataText]}>{distance.toFixed(2)}</Text>
           <Text style={[styles.text, styles.label]}>
             {homeCms.distanceLabel}
           </Text>
