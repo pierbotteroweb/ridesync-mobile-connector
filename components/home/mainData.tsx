@@ -17,6 +17,11 @@ export function MainData() {
       .map((value) => String(value).padStart(2, "0"))
       .join(":");
   }
+
+  function formatData(data: number): string {
+    return Number(data).toFixed(1);
+  }
+
   const homeCms = cms.home;
 
   const speed = useStore(useRideStore, (state) => state.speed);
@@ -27,11 +32,13 @@ export function MainData() {
   return (
     <View style={styles.flexContainerVertical}>
       <Text style={[styles.text, styles.time]}>{formatTime(time)}</Text>
-      <Text style={[styles.text, styles.speed]}>{speed}</Text>
+      <Text style={[styles.text, styles.speed]}>{formatData(speed)}</Text>
       <Text style={[styles.text, styles.label]}>{homeCms.speedLabel}</Text>
       <View style={styles.flexContainer}>
         <View style={styles.subContainerOne}>
-          <Text style={[styles.text, styles.dataText]}>{distance.toFixed(2)}</Text>
+          <Text style={[styles.text, styles.dataText]}>
+            {formatData(distance)}
+          </Text>
           <Text style={[styles.text, styles.label]}>
             {homeCms.distanceLabel}
           </Text>
