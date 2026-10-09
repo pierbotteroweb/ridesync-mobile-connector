@@ -7,16 +7,24 @@ export function SpeedData() {
   const avgSpeed = useStore(useRideStore, (state) => state.avgSpeed);
   const maxSpeed = useStore(useRideStore, (state) => state.maxSpeed);
 
+  function formatData(data: number, decimals: number): string {
+    return Number(data).toFixed(decimals);
+  }
+
   let { avgSpeedLabel, maxSpeedLabel } = cms.speedData;
 
   return (
     <View style={styles.flexContainer}>
       <View style={styles.subContainerOne}>
-        <Text style={[styles.text, styles.dataText]}>{avgSpeed}</Text>
+        <Text style={[styles.text, styles.dataText]}>
+          {formatData(avgSpeed, 1)}
+        </Text>
         <Text style={[styles.text, styles.label]}>{avgSpeedLabel}</Text>
       </View>
       <View style={styles.subContainerOne}>
-        <Text style={[styles.text, styles.dataText]}>{maxSpeed}</Text>
+        <Text style={[styles.text, styles.dataText]}>
+          {formatData(maxSpeed, 1)}
+        </Text>
         <Text style={[styles.text, styles.label]}>{maxSpeedLabel}</Text>
       </View>
     </View>

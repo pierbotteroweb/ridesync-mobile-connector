@@ -27,7 +27,7 @@ export const useRideStore = createStore<RideStore>((set) => ({
     speed: 0,
     avgSpeed: 0,
     maxSpeed: 0,
-    speedRegisters: [],
+    speedRegisters: [0],
     heartRate:0,
     time: 0,
     distance: 0,
@@ -41,7 +41,7 @@ export const useRideStore = createStore<RideStore>((set) => ({
             speed: 0,
             avgSpeed: 0,
             maxSpeed: 0,
-            speedRegisters: [],
+            speedRegisters: [0],
             distance: 0,
             heartRate: 0
         })
@@ -62,22 +62,22 @@ export const useRideStore = createStore<RideStore>((set) => ({
 
     findAverageSpeed: () => {
         set((state)=>({
-            avgSpeed: Number((state.speedRegisters.length
+            avgSpeed: state.speedRegisters.length
             ? state.speedRegisters.reduce((sum, value) => sum + value, 0) / state.speedRegisters.length
-            : 0).toFixed(1))
+            : 0
         }))
 
     },
 
     findMaxSpeed: () => {
         set((state) => ({
-            maxSpeed: Number((Math.max(...state.speedRegisters)).toFixed(2)),
+            maxSpeed: Math.max(...state.speedRegisters),
         }));
 
     },
     calculateDistance: () => {
         set((state) => ({
-            distance: Number((state.distance + state.speed / 3600).toFixed(2)),
+            distance: state.distance + state.speed / 3600,
         }));
     },
 
