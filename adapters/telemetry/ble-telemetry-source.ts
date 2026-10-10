@@ -3,7 +3,9 @@ import { TelemetrySource } from "@/ports/telemetry-source";
 import { Observable, Subject } from "rxjs";
 
 import { PermissionsAndroid, Platform } from "react-native";
-import { BleManager } from "react-native-ble-plx";
+import { BleManager, Device } from "react-native-ble-plx";
+
+const HEART_SENSOR_NAME = "57993-1";
 
 export class BleTelemetrySource implements TelemetrySource {
 
@@ -12,6 +14,8 @@ export class BleTelemetrySource implements TelemetrySource {
     private paused = false
     private startingScan = false;
     private scanning = false;
+
+    private heartDevice: Device | null = null;
 
     stream(): Observable<TelemetrySample> {
 
@@ -103,6 +107,15 @@ export class BleTelemetrySource implements TelemetrySource {
             const deviceName = device.name ?? device.localName;
 
             if (!deviceName) {
+                return;
+            }
+
+            if (deviceName === HEART_SENSOR_NAME) {
+                console.log("Sensor cardíaco encontrado:", deviceName, device.id);
+
+                this.heartDevice = device;
+                this.stopScan();
+
                 return;
             }
 
