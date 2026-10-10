@@ -30,10 +30,6 @@ export class BleTelemetrySource implements TelemetrySource {
             void this.startScan();
         }
 
-        setTimeout(() => {
-            this.stopScan();
-        }, 10000);
-
     }
 
     private async requestPermissions(): Promise<boolean> {
@@ -106,6 +102,10 @@ export class BleTelemetrySource implements TelemetrySource {
 
             console.log("Dispositivo BLE encontrado:", deviceName, device.id);
         });
+
+        setTimeout(() => {
+            this.stopScan();
+        }, 10000);
     }
 
     private stopScan(): void {
