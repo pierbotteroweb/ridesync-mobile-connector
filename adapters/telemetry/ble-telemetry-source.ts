@@ -10,6 +10,7 @@ export class BleTelemetrySource implements TelemetrySource {
     private telemetry$ = new Subject<TelemetrySample>()
     private manager = new BleManager()
     private paused = false
+    private scanning = false
 
     stream(): Observable<TelemetrySample> {
 
@@ -24,6 +25,14 @@ export class BleTelemetrySource implements TelemetrySource {
 
     resume(): void {
         this.paused = false
+
+        if (!this.scanning) {
+            void this.startScan();
+        }
+
+        setTimeout(() => {
+            this.stopScan();
+        }, 10000);
 
     }
 
@@ -56,6 +65,11 @@ export class BleTelemetrySource implements TelemetrySource {
     }
 
     private async startScan(): Promise<void> {
+
+        if(this.scanning){
+            return
+        }
+
         const hasPermissions = await this.requestPermissions();
 
         if (!hasPermissions) {
@@ -70,11 +84,13 @@ export class BleTelemetrySource implements TelemetrySource {
             return;
         }
 
+        this.scanning = true;
+
         this.manager.startDeviceScan(null, null, (error, device) => {
             
             if (error) {
                 console.log("Erro durante o scan BLE:", error);
-                this.manager.stopDeviceScan();
+                this.stopScan();
                 return;
             }
 
@@ -91,5 +107,10 @@ export class BleTelemetrySource implements TelemetrySource {
             console.log("Dispositivo BLE encontrado:", deviceName, device.id);
         });
     }
+
+    private stopScan(): void {
+        this.manager.stopDeviceScan()
+        this.scanning = false
+    } 
 
 }
