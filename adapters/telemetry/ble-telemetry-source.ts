@@ -10,7 +10,8 @@ export class BleTelemetrySource implements TelemetrySource {
     private telemetry$ = new Subject<TelemetrySample>()
     private manager = new BleManager()
     private paused = false
-    private scanning = false
+    private startingScan = false;
+    private scanning = false;
 
     stream(): Observable<TelemetrySample> {
 
@@ -26,7 +27,7 @@ export class BleTelemetrySource implements TelemetrySource {
     resume(): void {
         this.paused = false
 
-        if (!this.scanning) {
+        if (!this.startingScan && !this.scanning) {
             void this.startScan();
         }
 
@@ -62,13 +63,16 @@ export class BleTelemetrySource implements TelemetrySource {
 
     private async startScan(): Promise<void> {
 
-        if(this.scanning){
-            return
+        if (this.startingScan || this.scanning) {
+            return;
         }
+
+        this.startingScan = true;
 
         const hasPermissions = await this.requestPermissions();
 
         if (!hasPermissions) {
+            this.startingScan = false;
             console.log("Permissão Bluetooth negada.");
             return;
         }
@@ -76,10 +80,12 @@ export class BleTelemetrySource implements TelemetrySource {
         const bluetoothState = await this.manager.state();
 
         if (bluetoothState !== "PoweredOn") {
+            this.startingScan = false;
             console.log("Bluetooth não está ligado.");
             return;
         }
 
+        this.startingScan = false;
         this.scanning = true;
 
         this.manager.startDeviceScan(null, null, (error, device) => {
