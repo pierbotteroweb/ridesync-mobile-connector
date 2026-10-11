@@ -2,10 +2,13 @@ import { TelemetrySample } from "@/domain/telemetry";
 import { TelemetrySource } from "@/ports/telemetry-source";
 import { Observable, Subject } from "rxjs";
 
+import { Buffer } from "buffer";
 import { PermissionsAndroid, Platform } from "react-native";
 import { BleManager, Device } from "react-native-ble-plx";
 
 const HEART_SENSOR_NAME = "57993-1";
+const HR_SERVICE = "0000180d-0000-1000-8000-00805f9b34fb";
+const HR_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
 
 export class BleTelemetrySource implements TelemetrySource {
 
@@ -16,6 +19,12 @@ export class BleTelemetrySource implements TelemetrySource {
     private scanning = false;
 
     private heartDevice: Device | null = null;
+
+    private latestTelemetry: TelemetrySample = {
+        speed: 0,
+        heartRate: 0,
+        cadence: 0
+    };
 
     stream(): Observable<TelemetrySample> {
 
@@ -148,6 +157,8 @@ export class BleTelemetrySource implements TelemetrySource {
                 connectedDevice.id
             )
 
+            this.monitorHeartRate(connectedDevice);
+
         } catch (error) {
             console.log(
                 "Erro ao conectar ao sensor cardíaco:",
@@ -156,6 +167,60 @@ export class BleTelemetrySource implements TelemetrySource {
 
             this.heartDevice = null
         }
+    }
+
+    private publish(sample: TelemetrySample): void {
+        if (this.paused) {
+            return;
+        }
+
+        this.telemetry$.next(sample);
+    }
+    
+    private monitorHeartRate(device: Device): void {
+
+        device.monitorCharacteristicForService(
+            HR_SERVICE,
+            HR_MEASUREMENT,
+            (error, characteristic) => {
+
+                if (error) {
+                    console.log("Erro ao ler frequência cardíaca:", error);
+                    return;
+                }
+
+                if (!characteristic?.value) {
+                    return;
+                }
+
+                const raw = Buffer.from(
+                    characteristic.value,
+                    "base64"
+                );
+
+                if (raw.length < 2) {
+                    return;
+                }
+
+                const flags = raw[0];
+
+                const heartRateIs16Bits =
+                    (flags & 0x01) !== 0;
+
+                const heartRate = heartRateIs16Bits
+                    ? raw.readUInt16LE(1)
+                    : raw[1];
+
+                console.log("BPM:", heartRate);
+
+                this.latestTelemetry = {
+                    ...this.latestTelemetry,
+                    heartRate
+                };
+
+                this.publish(this.latestTelemetry);
+            }
+        );
     }
 
 }
