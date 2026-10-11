@@ -1,5 +1,8 @@
 {
   "expo": {
+    "androidNavigationBar": {
+      "visible": "leanback"
+    },
     "name": "ridesync-mobile-connector",
     "slug": "ridesync-mobile-connector",
     "version": "1.0.0",
@@ -52,6 +55,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "791bca34-abe9-48d6-b82c-b838d0e9cb4e"
+      }
     }
   }
 }
