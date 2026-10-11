@@ -28,6 +28,8 @@ export class BleTelemetrySource implements TelemetrySource {
     };
 
     private heartDisconnectSubscription: { remove: () => void } | null = null;
+
+    private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
     
 
 
@@ -69,6 +71,11 @@ export class BleTelemetrySource implements TelemetrySource {
             this.heartDisconnectSubscription = null;
 
             console.log("Desconectando sensor cardíaco ao finalizar corrida");
+
+            if (this.reconnectTimeout) {
+                clearTimeout(this.reconnectTimeout);
+                this.reconnectTimeout = null;
+            }
 
             void this.manager.cancelDeviceConnection(deviceId)
             .catch(error => {
@@ -171,6 +178,11 @@ export class BleTelemetrySource implements TelemetrySource {
 
         setTimeout(() => {
             this.stopScan();
+
+            if (!this.heartDevice && !this.paused) {
+                this.scheduleReconnect();
+            }
+
         }, SCAN_TIMEOUT_MS);
     }
 
@@ -186,6 +198,12 @@ export class BleTelemetrySource implements TelemetrySource {
             const connectedDevice = await this.manager.connectToDevice(device.id)
 
             await connectedDevice.discoverAllServicesAndCharacteristics()
+
+            if (this.reconnectTimeout) {
+                clearTimeout(this.reconnectTimeout);
+                this.reconnectTimeout = null;
+            }
+
 
             this.heartDevice = connectedDevice
 
@@ -311,6 +329,24 @@ export class BleTelemetrySource implements TelemetrySource {
                 this.publish(this.latestTelemetry);
             }
         );
+    }
+
+    private scheduleReconnect(): void {
+        if (this.paused || this.heartDevice) {
+            return;
+        }
+
+        if (this.reconnectTimeout) {
+            return;
+        }
+
+        this.reconnectTimeout = setTimeout(() => {
+            this.reconnectTimeout = null;
+
+            if (!this.paused && !this.heartDevice) {
+                void this.startScan();
+            }
+        }, 5000);
     }
 
 }
