@@ -50,13 +50,6 @@ export function MainData() {
           <Text style={[styles.text, styles.label]}>{homeCms.heartLabel}</Text>
         </View>
       </View>
-
-      <View style={styles.subContainerOne}>
-        <Text style={[styles.text, styles.dataText]}>
-          {formatData(cadence)}
-        </Text>
-        <Text style={[styles.text, styles.label]}>RPM</Text>
-      </View>
     </View>
   );
 }
