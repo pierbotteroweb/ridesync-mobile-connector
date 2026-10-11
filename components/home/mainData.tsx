@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
 
   time: {
-    fontSize: 70,
+    fontSize: 60,
     fontFamily: "Orbitron",
   },
 
