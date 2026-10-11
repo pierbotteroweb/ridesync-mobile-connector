@@ -311,6 +311,10 @@ export class BleTelemetrySource implements TelemetrySource {
 
             this.monitorHeartRate(connectedDevice);
 
+            if (!this.speedDevice && !this.paused) {
+                void this.startScan();
+            }
+
         } catch (error) {
             console.log(
                 "Erro ao conectar ao sensor cardíaco:",
@@ -349,6 +353,10 @@ export class BleTelemetrySource implements TelemetrySource {
                 connectedDevice.name,
                 connectedDevice.id
             );
+
+            if (!this.heartDevice && !this.paused) {
+                void this.startScan();
+            }
 
             this.speedDisconnectSubscription?.remove();
 
