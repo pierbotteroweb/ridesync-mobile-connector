@@ -33,6 +33,8 @@ export class BleTelemetrySource implements TelemetrySource {
     
     private connectingHeart = false;
 
+    private scanTimeout: ReturnType<typeof setTimeout> | null = null;
+
     stream(): Observable<TelemetrySample> {
 
         return this.telemetry$.asObservable()
@@ -123,8 +125,12 @@ export class BleTelemetrySource implements TelemetrySource {
     private async startScan(): Promise<void> {
 
         const SCAN_TIMEOUT_MS = 30000;
-
-        if (this.startingScan || this.scanning) {
+        
+        if (
+            this.connectingHeart ||
+            this.startingScan ||
+            this.scanning
+        ) {
             return;
         }
 
@@ -180,6 +186,9 @@ export class BleTelemetrySource implements TelemetrySource {
         });
 
         setTimeout(() => {
+
+            this.scanTimeout = null;
+
             this.stopScan();
 
             if (!this.heartDevice && !this.paused) {
@@ -192,6 +201,11 @@ export class BleTelemetrySource implements TelemetrySource {
     private stopScan(): void {
         this.manager.stopDeviceScan()
         this.scanning = false
+
+        if (this.scanTimeout) {
+            clearTimeout(this.scanTimeout);
+            this.scanTimeout = null;
+        }
     } 
 
     private async connectHeartDevice(device: Device): Promise<void> {
@@ -358,10 +372,15 @@ export class BleTelemetrySource implements TelemetrySource {
 
         this.reconnectTimeout = setTimeout(() => {
             this.reconnectTimeout = null;
-
-            if (!this.paused && !this.heartDevice) {
+            
+            if (
+                !this.paused &&
+                !this.heartDevice &&
+                !this.connectingHeart
+            ) {
                 void this.startScan();
             }
+
         }, 5000);
     }
 
