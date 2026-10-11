@@ -58,4 +58,10 @@ export class MockTelemetrySource implements TelemetrySource {
         this.paused$.next(false)
     }
 
+    stop(): void {
+        this.paused$.next(true)
+    }
+
+    
+
 }

@@ -5,4 +5,5 @@ export interface TelemetrySource {
     stream(): Observable<TelemetrySample>;
     pause(): void;
     resume(): void;
+    stop(): void;
 }
