@@ -1,3 +1,4 @@
+import { BleTelemetrySource } from "@/adapters/telemetry/ble-telemetry-source";
 import { MockTelemetrySource } from "@/adapters/telemetry/mock-telemetry-source";
 import { RideTelemetryService } from "@/services/ride-telemetry-service";
 import { useRideStore } from "@/store/rideStore";
@@ -13,8 +14,9 @@ export function useTelemetry(){
     useEffect(() => {
 
         const mockTelemetrySource = new MockTelemetrySource()
+        const bleTelemetrySource = new BleTelemetrySource()
 
-        const telemetryService = new RideTelemetryService(mockTelemetrySource)
+        const telemetryService = new RideTelemetryService(bleTelemetrySource)
 
         telemetryServiceRef.current = telemetryService
 
