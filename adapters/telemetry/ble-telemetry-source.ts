@@ -15,6 +15,8 @@ const SPEED_SENSOR_NAME = "Cycplus S3 26429";
 const CSC_SERVICE = "00001816-0000-1000-8000-00805f9b34fb";
 const CSC_MEASUREMENT = "00002a5b-0000-1000-8000-00805f9b34fb";
 
+const WHEEL_CIRCUMFERENCE_METERS = 2.105;
+
 export class BleTelemetrySource implements TelemetrySource {
 
     private telemetry$ = new Subject<TelemetrySample>()
@@ -47,6 +49,10 @@ export class BleTelemetrySource implements TelemetrySource {
 
     private speedDisconnectSubscription:
         { remove: () => void } | null = null;
+
+    private lastWheelRevolutions: number | null = null;
+
+    private lastWheelEventTime: number | null = null;
 
     stream(): Observable<TelemetrySample> {
 
@@ -387,6 +393,8 @@ export class BleTelemetrySource implements TelemetrySource {
                     }
                 );
 
+                this.monitorSpeed(connectedDevice);
+
                 if (!this.heartDevice && !this.paused) {
                     void this.startScan();
                 }
@@ -507,6 +515,105 @@ export class BleTelemetrySource implements TelemetrySource {
             }
 
         }, 5000);
+    }
+
+    private monitorSpeed(device: Device): void {
+
+        device.monitorCharacteristicForService(
+            CSC_SERVICE,
+            CSC_MEASUREMENT,
+            (error, characteristic) => {
+
+                if (error) {
+                    console.log(
+                        "Erro ao ler sensor de velocidade:",
+                        error
+                    );
+
+                    return;
+                }
+
+                if (!characteristic?.value) {
+                    return;
+                }
+
+                const raw = Buffer.from(
+                    characteristic.value,
+                    "base64"
+                );
+
+                if (raw.length < 7) {
+                    return;
+                }
+
+                const flags = raw[0];
+
+                const hasWheelData =
+                    (flags & 0x01) !== 0;
+
+                if (!hasWheelData) {
+                    return;
+                }
+
+                const wheelRevolutions =
+                    raw.readUInt32LE(1);
+
+                const eventTime =
+                    raw.readUInt16LE(5);
+
+                if (
+                    this.lastWheelRevolutions === null ||
+                    this.lastWheelEventTime === null
+                ) {
+                    this.lastWheelRevolutions = wheelRevolutions;
+                    this.lastWheelEventTime = eventTime;
+                    return;
+                }
+
+                const deltaRevolutions =
+                    wheelRevolutions - this.lastWheelRevolutions;
+
+                let deltaTime =
+                    eventTime - this.lastWheelEventTime;
+
+                if (deltaTime < 0) {
+                    deltaTime += 65536;
+                }
+
+                this.lastWheelRevolutions = wheelRevolutions;
+                this.lastWheelEventTime = eventTime;
+
+                const seconds = deltaTime / 1024;
+
+                if (deltaRevolutions <= 0 || seconds <= 0) {
+                    return;
+                }
+
+                const metersPerSecond =
+                    (deltaRevolutions * WHEEL_CIRCUMFERENCE_METERS)
+                    / seconds;
+
+                const speed = metersPerSecond * 3.6;
+
+                console.log("Velocidade:", speed, "km/h");
+
+                this.latestTelemetry = {
+                    ...this.latestTelemetry,
+                    speed
+                };
+
+                this.publish(this.latestTelemetry);
+
+                console.log(
+                    "Dados velocidade:",
+                    {
+                        wheelRevolutions,
+                        eventTime,
+                        flags
+                    }
+                );
+            }
+        );
     }
 
 }
