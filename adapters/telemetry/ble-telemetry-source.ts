@@ -113,8 +113,8 @@ export class BleTelemetrySource implements TelemetrySource {
             if (deviceName === HEART_SENSOR_NAME) {
                 console.log("Sensor cardíaco encontrado:", deviceName, device.id);
 
-                this.heartDevice = device;
                 this.stopScan();
+                void this.connectHeartDevice(device)
 
                 return;
             }
@@ -131,5 +131,31 @@ export class BleTelemetrySource implements TelemetrySource {
         this.manager.stopDeviceScan()
         this.scanning = false
     } 
+
+    private async connectHeartDevice(device: Device): Promise<void> {
+        try{
+            console.log("conectado ao sensor cardíaco:", device.name)
+
+            const connectedDevice = await this.manager.connectToDevice(device.id)
+
+            await connectedDevice.discoverAllServicesAndCharacteristics()
+
+            this.heartDevice = connectedDevice
+
+            console.log(
+                "Sensor cardiaco conectado:",
+                connectedDevice.name,
+                connectedDevice.id
+            )
+
+        } catch (error) {
+            console.log(
+                "Erro ao conectar ao sensor cardíaco:",
+                error
+            );
+
+            this.heartDevice = null
+        }
+    }
 
 }
