@@ -188,7 +188,11 @@ export class BleTelemetrySource implements TelemetrySource {
                 return;
             }
 
-            if (deviceName === HEART_SENSOR_NAME) {
+            if (
+                deviceName === HEART_SENSOR_NAME &&
+                !this.heartDevice &&
+                !this.connectingHeart
+            ) {
                 console.log("Sensor cardíaco encontrado:", deviceName, device.id);
 
                 this.stopScan();
