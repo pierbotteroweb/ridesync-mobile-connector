@@ -1,7 +1,7 @@
 {
   "expo": {
     "androidNavigationBar": {
-      "visible": "leanback"
+      "visible": "sticky-immersive"
     },
     "name": "ridesync-mobile-connector",
     "slug": "ridesync-mobile-connector",
