@@ -86,10 +86,10 @@ export class BleTelemetrySource implements TelemetrySource {
     resume(): void {
         this.stopped = false;
         this.paused = false;
-
+        
         if (
-            !this.heartDevice &&
-            !this.connectingHeart &&
+            this.hasMissingSensors() &&
+            !this.isConnectingSensor() &&
             !this.startingScan &&
             !this.scanning
         ) {
@@ -415,7 +415,7 @@ export class BleTelemetrySource implements TelemetrySource {
 
             this.monitorHeartRate(connectedDevice);
 
-            if (!this.speedDevice && !this.paused) {
+            if (this.hasMissingSensors() && !this.paused) {
                 void this.startScan();
             }
 
@@ -489,7 +489,7 @@ export class BleTelemetrySource implements TelemetrySource {
 
                 this.monitorSpeed(connectedDevice);
 
-                if (!this.heartDevice && !this.paused) {
+                if (this.hasMissingSensors() && !this.paused) {
                     void this.startScan();
                 }
 
@@ -549,8 +549,8 @@ export class BleTelemetrySource implements TelemetrySource {
                         useSensorStore
                             .getState()
                             .setCadence(false);
-
-                        if (!this.paused) {
+                            
+                        if (this.hasMissingSensors() && !this.paused) {
                             void this.startScan();
                         }
                     }
@@ -909,6 +909,22 @@ export class BleTelemetrySource implements TelemetrySource {
                     }
                 );
             }
+        );
+    }
+
+    private hasMissingSensors(): boolean {
+        return (
+            !this.heartDevice ||
+            !this.speedDevice ||
+            !this.cadenceDevice
+        );
+    }
+
+    private isConnectingSensor(): boolean {
+        return (
+            this.connectingHeart ||
+            this.connectingSpeed ||
+            this.connectingCadence
         );
     }
 
