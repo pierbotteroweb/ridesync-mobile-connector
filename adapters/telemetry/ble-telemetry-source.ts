@@ -109,6 +109,11 @@ export class BleTelemetrySource implements TelemetrySource {
             this.reconnectTimeout = null;
         }
 
+        if (this.cadenceStopTimeout) {
+            clearTimeout(this.cadenceStopTimeout);
+            this.cadenceStopTimeout = null;
+        }
+
         if(this.heartDevice){
 
             const deviceId = this.heartDevice.id
@@ -130,6 +135,60 @@ export class BleTelemetrySource implements TelemetrySource {
             });
 
         }
+
+        if (this.speedDevice) {
+            const deviceId = this.speedDevice.id;
+
+            this.speedDevice = null;
+
+            useSensorStore.getState().setSpeed(false);
+
+            this.speedDisconnectSubscription?.remove();
+            this.speedDisconnectSubscription = null;
+
+            console.log(
+                "Desconectando sensor de velocidade ao finalizar corrida"
+            );
+
+            void this.manager
+                .cancelDeviceConnection(deviceId)
+                .catch(error => {
+                    console.log(
+                        "Erro ao desconectar sensor de velocidade:",
+                        error
+                    );
+                });
+        }
+
+        if (this.cadenceDevice) {
+            const deviceId = this.cadenceDevice.id;
+
+            this.cadenceDevice = null;
+
+            useSensorStore.getState().setCadence(false);
+
+            this.cadenceDisconnectSubscription?.remove();
+            this.cadenceDisconnectSubscription = null;
+
+            console.log(
+                "Desconectando sensor de cadência ao finalizar corrida"
+            );
+
+            void this.manager
+                .cancelDeviceConnection(deviceId)
+                .catch(error => {
+                    console.log(
+                        "Erro ao desconectar sensor de cadência:",
+                        error
+                    );
+                });
+        }
+
+        this.lastWheelRevolutions = null;
+        this.lastWheelEventTime = null;
+
+        this.lastCrankRevolutions = null;
+        this.lastCrankEventTime = null;
 
     }
 
