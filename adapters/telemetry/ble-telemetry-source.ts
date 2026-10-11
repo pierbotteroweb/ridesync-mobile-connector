@@ -26,6 +26,8 @@ export class BleTelemetrySource implements TelemetrySource {
         heartRate: 0,
         cadence: 0
     };
+
+    private heartDisconnectSubscription: { remove: () => void } | null = null;
     
 
 
@@ -44,7 +46,7 @@ export class BleTelemetrySource implements TelemetrySource {
     resume(): void {
         this.paused = false
 
-        if (!this.startingScan && !this.scanning) {
+        if (!this.heartDevice && !this.startingScan && !this.scanning) {
             void this.startScan();
         }
 
@@ -62,6 +64,11 @@ export class BleTelemetrySource implements TelemetrySource {
             this.heartDevice = null
 
             useSensorStore.getState().setHeartrate(false)
+
+            this.heartDisconnectSubscription?.remove();
+            this.heartDisconnectSubscription = null;
+
+            console.log("Desconectando sensor cardíaco ao finalizar corrida");
 
             void this.manager.cancelDeviceConnection(deviceId)
             .catch(error => {
@@ -189,7 +196,10 @@ export class BleTelemetrySource implements TelemetrySource {
                 connectedDevice.name,
                 connectedDevice.id
             )
+            
+            this.heartDisconnectSubscription?.remove();
 
+            this.heartDisconnectSubscription =
             this.manager.onDeviceDisconnected(
                 connectedDevice.id,() => {
                     console.log("Sensor cardiaco desconectado")
