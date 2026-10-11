@@ -4,7 +4,8 @@ type SensorStore = {
     speed: boolean;
     cadence: boolean;
     heartrate: boolean;
-    switchSpeed: () => void;
+    // switchSpeed: () => void;
+    setSpeed: (connected: boolean) => void;
     switchCadence: () => void;
     // switchHeartrate: () => void;
     setHeartrate: (connected:boolean) => void;
@@ -15,10 +16,10 @@ export const useSensorStore = createStore<SensorStore>((set) => ({
     cadence: false,
     heartrate: false,
 
-    switchSpeed: () => {
-        set((state) => ({
-            speed: !state.speed
-        }))
+    setSpeed: (connected: boolean) => {
+        set({
+            speed: connected
+        })
     },
     switchCadence: () => {
         set((state) => ({

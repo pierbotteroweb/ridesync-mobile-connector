@@ -11,6 +11,10 @@ const HEART_SENSOR_NAME = "57993-1";
 const HR_SERVICE = "0000180d-0000-1000-8000-00805f9b34fb";
 const HR_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
 
+const SPEED_SENSOR_NAME = "Cycplus S3 26429";
+const CSC_SERVICE = "00001816-0000-1000-8000-00805f9b34fb";
+const CSC_MEASUREMENT = "00002a5b-0000-1000-8000-00805f9b34fb";
+
 export class BleTelemetrySource implements TelemetrySource {
 
     private telemetry$ = new Subject<TelemetrySample>()
@@ -36,6 +40,13 @@ export class BleTelemetrySource implements TelemetrySource {
     private scanTimeout: ReturnType<typeof setTimeout> | null = null;
 
     private stopped = true;
+
+    private speedDevice: Device | null = null;
+    
+    private connectingSpeed = false;
+
+    private speedDisconnectSubscription:
+        { remove: () => void } | null = null;
 
     stream(): Observable<TelemetrySample> {
 
@@ -186,6 +197,18 @@ export class BleTelemetrySource implements TelemetrySource {
                 return;
             }
 
+            if (deviceName === SPEED_SENSOR_NAME &&
+                !this.speedDevice &&
+                !this.connectingSpeed) {
+                console.log(
+                    "Sensor de velocidade encontrado:", deviceName, device.id);
+
+                this.stopScan();
+                void this.connectSpeedDevice(device);
+
+                return;
+            }
+
             console.log("Dispositivo BLE encontrado:", deviceName, device.id);
         });
 
@@ -298,6 +321,74 @@ export class BleTelemetrySource implements TelemetrySource {
             this.heartDevice = null
 
             useSensorStore.getState().setHeartrate(false)
+        }
+    }
+
+    private async connectSpeedDevice(device: Device): Promise<void> {
+
+        if (this.connectingSpeed || this.speedDevice) {
+            return;
+        }
+
+        this.connectingSpeed = true;
+
+        try {
+            const connectedDevice =
+                await this.manager.connectToDevice(device.id);
+
+            await connectedDevice
+                .discoverAllServicesAndCharacteristics();
+
+            this.connectingSpeed = false;
+            this.speedDevice = connectedDevice;
+
+            useSensorStore.getState().setSpeed(true);
+
+            console.log(
+                "Sensor de velocidade conectado:",
+                connectedDevice.name,
+                connectedDevice.id
+            );
+
+            this.speedDisconnectSubscription?.remove();
+
+            this.speedDisconnectSubscription =
+                this.manager.onDeviceDisconnected(
+                    connectedDevice.id,
+                    () => {
+                        console.log(
+                            "Sensor de velocidade desconectado"
+                        );
+
+                        this.speedDevice = null;
+
+                        useSensorStore
+                            .getState()
+                            .setSpeed(false);
+
+                        this.latestTelemetry = {
+                            ...this.latestTelemetry,
+                            speed: 0
+                        };
+
+                        this.publish(this.latestTelemetry);
+
+                        if (!this.paused) {
+                            void this.startScan();
+                        }
+                    }
+                );
+
+        } catch (error) {
+            this.connectingSpeed = false;
+            this.speedDevice = null;
+
+            useSensorStore.getState().setSpeed(false);
+
+            console.log(
+                "Erro ao conectar sensor de velocidade:",
+                error
+            );
         }
     }
 
