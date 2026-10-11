@@ -31,8 +31,7 @@ export class BleTelemetrySource implements TelemetrySource {
 
     private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
     
-
-
+    private connectingHeart = false;
 
     stream(): Observable<TelemetrySample> {
 
@@ -48,7 +47,12 @@ export class BleTelemetrySource implements TelemetrySource {
     resume(): void {
         this.paused = false
 
-        if (!this.heartDevice && !this.startingScan && !this.scanning) {
+        if (
+            !this.heartDevice &&
+            !this.connectingHeart &&
+            !this.startingScan &&
+            !this.scanning
+        ) {
             void this.startScan();
         }
 
@@ -192,6 +196,13 @@ export class BleTelemetrySource implements TelemetrySource {
     } 
 
     private async connectHeartDevice(device: Device): Promise<void> {
+
+        if (this.connectingHeart || this.heartDevice) {
+            return;
+        }
+
+        this.connectingHeart = true;
+
         try{
             console.log("conectado ao sensor cardíaco:", device.name)
 
@@ -204,8 +215,8 @@ export class BleTelemetrySource implements TelemetrySource {
                 this.reconnectTimeout = null;
             }
 
-
-            this.heartDevice = connectedDevice
+            this.connectingHeart = false;
+            this.heartDevice = connectedDevice;
 
             useSensorStore.getState().setHeartrate(true)
 
@@ -248,6 +259,7 @@ export class BleTelemetrySource implements TelemetrySource {
                 error
             );
 
+            this.connectingHeart = false;
             this.heartDevice = null
 
             useSensorStore.getState().setHeartrate(false)
@@ -332,7 +344,12 @@ export class BleTelemetrySource implements TelemetrySource {
     }
 
     private scheduleReconnect(): void {
-        if (this.paused || this.heartDevice) {
+
+        if (
+            this.paused ||
+            this.heartDevice ||
+            this.connectingHeart
+        ) {
             return;
         }
 
