@@ -185,16 +185,14 @@ export class BleTelemetrySource implements TelemetrySource {
             console.log("Dispositivo BLE encontrado:", deviceName, device.id);
         });
 
-        setTimeout(() => {
+        this.scanTimeout = setTimeout(() => {
+                this.scanTimeout = null;
 
-            this.scanTimeout = null;
+                this.stopScan();
 
-            this.stopScan();
-
-            if (!this.heartDevice && !this.paused) {
-                this.scheduleReconnect();
-            }
-
+                if (!this.heartDevice && !this.paused) {
+                    this.scheduleReconnect();
+                }
         }, SCAN_TIMEOUT_MS);
     }
 
