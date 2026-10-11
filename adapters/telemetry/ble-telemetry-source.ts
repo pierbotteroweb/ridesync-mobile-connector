@@ -225,7 +225,7 @@ export class BleTelemetrySource implements TelemetrySource {
         const SCAN_TIMEOUT_MS = 30000;
         
         if (
-            this.connectingHeart ||
+            this.isConnectingSensor() ||
             this.startingScan ||
             this.scanning
         ) {
@@ -321,7 +321,7 @@ export class BleTelemetrySource implements TelemetrySource {
 
                 this.stopScan();
 
-                if (!this.heartDevice && !this.paused) {
+                if (this.hasMissingSensors() && !this.paused) {
                     this.scheduleReconnect();
                 }
         }, SCAN_TIMEOUT_MS);
@@ -558,6 +558,10 @@ export class BleTelemetrySource implements TelemetrySource {
             
             this.monitorCadence(connectedDevice);
 
+            if (this.hasMissingSensors() && !this.paused) {
+                void this.startScan();
+            }
+
         } catch (error) {
             this.connectingCadence = false;
             this.cadenceDevice = null;
@@ -656,7 +660,7 @@ export class BleTelemetrySource implements TelemetrySource {
         if (
             this.paused ||
             this.heartDevice ||
-            this.connectingHeart
+            this.isConnectingSensor()
         ) {
             return;
         }
@@ -671,7 +675,7 @@ export class BleTelemetrySource implements TelemetrySource {
             if (
                 !this.paused &&
                 !this.heartDevice &&
-                !this.connectingHeart
+                !this.isConnectingSensor()
             ) {
                 void this.startScan();
             }
