@@ -354,10 +354,6 @@ export class BleTelemetrySource implements TelemetrySource {
                 connectedDevice.id
             );
 
-            if (!this.heartDevice && !this.paused) {
-                void this.startScan();
-            }
-
             this.speedDisconnectSubscription?.remove();
 
             this.speedDisconnectSubscription =
@@ -386,6 +382,10 @@ export class BleTelemetrySource implements TelemetrySource {
                         }
                     }
                 );
+
+                if (!this.heartDevice && !this.paused) {
+                    void this.startScan();
+                }
 
         } catch (error) {
             this.connectingSpeed = false;
