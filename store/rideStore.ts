@@ -20,6 +20,7 @@ type RideStore = {
     status: RideStatus;
     setStatus: (newStatus: RideStatus) => void;
     applyTelemetry: (sample: TelemetrySample)=> void;
+    cadence: number;
 }
 
 
@@ -31,6 +32,7 @@ export const useRideStore = createStore<RideStore>((set) => ({
     heartRate:0,
     time: 0,
     distance: 0,
+    cadence: 0,
     status: "idle",
     setTime: (newTime:number) => set({ time: newTime }),
     setStatus: (newStatus: RideStatus) => set({ status: newStatus }),
@@ -39,6 +41,7 @@ export const useRideStore = createStore<RideStore>((set) => ({
             status: "idle",
             time: 0,
             speed: 0,
+            cadence: 0,
             avgSpeed: 0,
             maxSpeed: 0,
             speedRegisters: [0],
@@ -56,6 +59,7 @@ export const useRideStore = createStore<RideStore>((set) => ({
         set((state)=>({
             speed: sample.speed,
             heartRate: sample.heartRate,
+            cadence: sample.cadence,
             speedRegisters: [...state.speedRegisters, sample.speed]
         }))
     },

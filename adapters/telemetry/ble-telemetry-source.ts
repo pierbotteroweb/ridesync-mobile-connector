@@ -17,6 +17,8 @@ const CSC_MEASUREMENT = "00002a5b-0000-1000-8000-00805f9b34fb";
 
 const WHEEL_CIRCUMFERENCE_METERS = 2.105;
 
+const CADENCE_SENSOR_NAME = "12494-85";
+
 export class BleTelemetrySource implements TelemetrySource {
 
     private telemetry$ = new Subject<TelemetrySample>()
@@ -53,6 +55,22 @@ export class BleTelemetrySource implements TelemetrySource {
     private lastWheelRevolutions: number | null = null;
 
     private lastWheelEventTime: number | null = null;
+
+    private cadenceDevice: Device | null = null;
+
+    private connectingCadence = false;
+
+    private cadenceDisconnectSubscription:
+        { remove: () => void } | null = null;
+
+    private lastCrankRevolutions: number | null = null;
+    
+    private lastCrankEventTime: number | null = null;
+    
+    private cadenceStopTimeout:
+        ReturnType<typeof setTimeout> | null = null;
+
+
 
     stream(): Observable<TelemetrySample> {
 
@@ -215,6 +233,23 @@ export class BleTelemetrySource implements TelemetrySource {
 
                 this.stopScan();
                 void this.connectSpeedDevice(device);
+
+                return;
+            }
+
+            if (
+                deviceName === CADENCE_SENSOR_NAME &&
+                !this.cadenceDevice &&
+                !this.connectingCadence
+            ) {
+                console.log(
+                    "Sensor de cadência encontrado:",
+                    deviceName,
+                    device.id
+                );
+
+                this.stopScan();
+                void this.connectCadenceDevice(device);
 
                 return;
             }
@@ -412,6 +447,73 @@ export class BleTelemetrySource implements TelemetrySource {
         }
     }
 
+    private async connectCadenceDevice(device: Device): Promise<void> {
+
+        if (this.connectingCadence || this.cadenceDevice) {
+            return;
+        }
+
+        this.connectingCadence = true;
+
+        try {
+            const connectedDevice =
+                await this.manager.connectToDevice(device.id);
+
+            await connectedDevice
+                .discoverAllServicesAndCharacteristics();
+
+            this.connectingCadence = false;
+            this.cadenceDevice = connectedDevice;
+
+            useSensorStore
+                .getState()
+                .setCadence(true);
+
+            console.log(
+                "Sensor de cadência conectado:",
+                connectedDevice.name,
+                connectedDevice.id
+            );
+
+            this.cadenceDisconnectSubscription?.remove();
+
+            this.cadenceDisconnectSubscription =
+                this.manager.onDeviceDisconnected(
+                    connectedDevice.id,
+                    () => {
+                        console.log(
+                            "Sensor de cadência desconectado"
+                        );
+
+                        this.cadenceDevice = null;
+
+                        useSensorStore
+                            .getState()
+                            .setCadence(false);
+
+                        if (!this.paused) {
+                            void this.startScan();
+                        }
+                    }
+                );
+            
+            this.monitorCadence(connectedDevice);
+
+        } catch (error) {
+            this.connectingCadence = false;
+            this.cadenceDevice = null;
+
+            useSensorStore
+                .getState()
+                .setCadence(false);
+
+            console.log(
+                "Erro ao conectar sensor de cadência:",
+                error
+            );
+        }
+    }
+
     private publish(sample: TelemetrySample): void {
         if (this.paused) {
             return;
@@ -419,6 +521,7 @@ export class BleTelemetrySource implements TelemetrySource {
 
         this.telemetry$.next(sample);
     }
+    
     
     private monitorHeartRate(device: Device): void {
 
@@ -615,5 +718,141 @@ export class BleTelemetrySource implements TelemetrySource {
             }
         );
     }
+
+    private monitorCadence(device: Device): void {
+
+        device.monitorCharacteristicForService(
+            CSC_SERVICE,
+            CSC_MEASUREMENT,
+            (error, characteristic) => {
+
+                if (error) {
+                    console.log(
+                        "Erro ao ler sensor de cadência:",
+                        error
+                    );
+
+                    return;
+                }
+
+                if (!characteristic?.value) {
+                    return;
+                }
+
+                const raw = Buffer.from(
+                    characteristic.value,
+                    "base64"
+                );
+
+                if (raw.length < 5) {
+                    return;
+                }
+
+                const flags = raw[0];
+
+                const hasCrankData =
+                    (flags & 0x02) !== 0;
+
+                if (!hasCrankData) {
+                    return;
+                }
+
+                let offset = 1;
+
+                // Se o mesmo pacote também tiver dados da roda,
+                // esses 6 bytes vêm antes dos dados do pedivela.
+                const hasWheelData =
+                    (flags & 0x01) !== 0;
+
+                if (hasWheelData) {
+                    offset += 6;
+                }
+
+                if (raw.length < offset + 4) {
+                    return;
+                }
+
+                const crankRevolutions =
+                    raw.readUInt16LE(offset);
+
+                const eventTime =
+                    raw.readUInt16LE(offset + 2);
+
+                if (
+                    this.lastCrankRevolutions === null ||
+                    this.lastCrankEventTime === null
+                ) {
+                    this.lastCrankRevolutions = crankRevolutions;
+                    this.lastCrankEventTime = eventTime;
+                    return;
+                }
+
+                let deltaRevolutions =
+                    crankRevolutions - this.lastCrankRevolutions;
+
+                if (deltaRevolutions < 0) {
+                    deltaRevolutions += 65536;
+                }
+
+                let deltaTime =
+                    eventTime - this.lastCrankEventTime;
+
+                if (deltaTime < 0) {
+                    deltaTime += 65536;
+                }
+
+                if (deltaRevolutions === 0) {
+                    return;
+                }
+
+                this.lastCrankRevolutions = crankRevolutions;
+                this.lastCrankEventTime = eventTime;
+
+                const seconds = deltaTime / 1024;
+
+                if (seconds <= 0) {
+                    return;
+                }
+
+                const cadence =
+                    (deltaRevolutions / seconds) * 60;
+
+                console.log("Cadência:", cadence, "RPM");
+
+                this.latestTelemetry = {
+                    ...this.latestTelemetry,
+                    cadence
+                };
+
+                this.publish(this.latestTelemetry);
+
+                if (this.cadenceStopTimeout) {
+                    clearTimeout(this.cadenceStopTimeout);
+                }
+
+                this.cadenceStopTimeout = setTimeout(() => {
+                    this.latestTelemetry = {
+                        ...this.latestTelemetry,
+                        cadence: 0
+                    };
+
+                    this.publish(this.latestTelemetry);
+
+                    console.log("Cadência: 0 RPM");
+                }, 2000);
+
+                console.log(
+                    "Dados cadência:",
+                    {
+                        crankRevolutions,
+                        eventTime,
+                        flags
+                    }
+                );
+            }
+        );
+    }
+
+    
 
 }
