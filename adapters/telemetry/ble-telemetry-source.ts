@@ -63,6 +63,11 @@ export class BleTelemetrySource implements TelemetrySource {
 
         this.stopScan()
 
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = null;
+        }
+
         if(this.heartDevice){
 
             const deviceId = this.heartDevice.id
@@ -75,12 +80,6 @@ export class BleTelemetrySource implements TelemetrySource {
             this.heartDisconnectSubscription = null;
 
             console.log("Desconectando sensor cardíaco ao finalizar corrida");
-
-            if (this.reconnectTimeout) {
-                clearTimeout(this.reconnectTimeout);
-                this.reconnectTimeout = null;
-            }
-
             void this.manager.cancelDeviceConnection(deviceId)
             .catch(error => {
                 console.log(
