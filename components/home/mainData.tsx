@@ -29,6 +29,8 @@ export function MainData() {
   const heartRate = useStore(useRideStore, (state) => state.heartRate);
   const distance = useStore(useRideStore, (state) => state.distance);
 
+  const cadence = useStore(useRideStore, (state) => state.cadence);
+
   return (
     <View style={styles.flexContainerVertical}>
       <Text style={[styles.text, styles.time]}>{formatTime(time)}</Text>
@@ -47,6 +49,13 @@ export function MainData() {
           <Text style={[styles.text, styles.dataText]}>{heartRate}</Text>
           <Text style={[styles.text, styles.label]}>{homeCms.heartLabel}</Text>
         </View>
+      </View>
+
+      <View style={styles.subContainerOne}>
+        <Text style={[styles.text, styles.dataText]}>
+          {formatData(cadence)}
+        </Text>
+        <Text style={[styles.text, styles.label]}>RPM</Text>
       </View>
     </View>
   );
