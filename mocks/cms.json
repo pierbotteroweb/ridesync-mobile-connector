@@ -1,7 +1,5 @@
 {
   "speedData": {
-    "mockedAvgSpeedData": "14,00",
-    "mockedMaxSpeedData": "15,00",
     "avgSpeedLabel": "Avg Speed (km/h)",
     "maxSpeedLabel": "Max Speed (km/h)"
   },
