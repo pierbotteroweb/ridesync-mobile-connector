@@ -35,6 +35,8 @@ export class BleTelemetrySource implements TelemetrySource {
 
     private scanTimeout: ReturnType<typeof setTimeout> | null = null;
 
+    private stopped = true;
+
     stream(): Observable<TelemetrySample> {
 
         return this.telemetry$.asObservable()
@@ -47,7 +49,8 @@ export class BleTelemetrySource implements TelemetrySource {
     }
 
     resume(): void {
-        this.paused = false
+        this.stopped = false;
+        this.paused = false;
 
         if (
             !this.heartDevice &&
@@ -61,7 +64,8 @@ export class BleTelemetrySource implements TelemetrySource {
     }
 
     stop(): void {
-        this.paused = true
+        this.stopped = true;
+        this.paused = true;
 
         this.stopScan()
 
@@ -219,7 +223,27 @@ export class BleTelemetrySource implements TelemetrySource {
 
             const connectedDevice = await this.manager.connectToDevice(device.id)
 
+            if (this.stopped) {
+                this.connectingHeart = false;
+
+                await this.manager
+                    .cancelDeviceConnection(connectedDevice.id)
+                    .catch(() => undefined);
+
+                return;
+            }
+
             await connectedDevice.discoverAllServicesAndCharacteristics()
+
+            if (this.stopped) {
+                this.connectingHeart = false;
+
+                await this.manager
+                    .cancelDeviceConnection(connectedDevice.id)
+                    .catch(() => undefined);
+
+                return;
+            }
 
             if (this.reconnectTimeout) {
                 clearTimeout(this.reconnectTimeout);
