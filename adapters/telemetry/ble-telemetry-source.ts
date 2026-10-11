@@ -2,6 +2,7 @@ import { TelemetrySample } from "@/domain/telemetry";
 import { TelemetrySource } from "@/ports/telemetry-source";
 import { Observable, Subject } from "rxjs";
 
+import { useSensorStore } from "@/store/sensorStore";
 import { Buffer } from "buffer";
 import { PermissionsAndroid, Platform } from "react-native";
 import { BleManager, Device } from "react-native-ble-plx";
@@ -25,6 +26,9 @@ export class BleTelemetrySource implements TelemetrySource {
         heartRate: 0,
         cadence: 0
     };
+    
+
+
 
     stream(): Observable<TelemetrySample> {
 
@@ -42,6 +46,31 @@ export class BleTelemetrySource implements TelemetrySource {
 
         if (!this.startingScan && !this.scanning) {
             void this.startScan();
+        }
+
+    }
+
+    stop(): void {
+        this.paused = true
+
+        this.stopScan()
+
+        if(this.heartDevice){
+
+            const deviceId = this.heartDevice.id
+
+            this.heartDevice = null
+
+            useSensorStore.getState().setHeartrate(false)
+
+            void this.manager.cancelDeviceConnection(deviceId)
+            .catch(error => {
+                console.log(
+                    "Erro ao desconectar sensor cardíaco:",
+                    error
+                );
+            });
+
         }
 
     }
@@ -75,6 +104,8 @@ export class BleTelemetrySource implements TelemetrySource {
     }
 
     private async startScan(): Promise<void> {
+
+        const SCAN_TIMEOUT_MS = 30000;
 
         if (this.startingScan || this.scanning) {
             return;
@@ -133,7 +164,7 @@ export class BleTelemetrySource implements TelemetrySource {
 
         setTimeout(() => {
             this.stopScan();
-        }, 10000);
+        }, SCAN_TIMEOUT_MS);
     }
 
     private stopScan(): void {
@@ -151,11 +182,24 @@ export class BleTelemetrySource implements TelemetrySource {
 
             this.heartDevice = connectedDevice
 
+            useSensorStore.getState().setHeartrate(true)
+
             console.log(
                 "Sensor cardiaco conectado:",
                 connectedDevice.name,
                 connectedDevice.id
             )
+
+            this.manager.onDeviceDisconnected(
+                connectedDevice.id,() => {
+                    console.log("Sensor cardiaco desconectado")
+
+                    this.heartDevice = null
+
+                    useSensorStore.getState().setHeartrate(false)
+                }
+            )
+        
 
             this.monitorHeartRate(connectedDevice);
 
@@ -166,6 +210,8 @@ export class BleTelemetrySource implements TelemetrySource {
             );
 
             this.heartDevice = null
+
+            useSensorStore.getState().setHeartrate(false)
         }
     }
 
@@ -203,6 +249,18 @@ export class BleTelemetrySource implements TelemetrySource {
                 }
 
                 const flags = raw[0];
+
+                const contactSupported = (flags & 0x04) !== 0;
+                const contactDetected = (flags & 0x02) !== 0;
+
+                console.log(
+                    "Contato HR:",
+                    {
+                        contactSupported,
+                        contactDetected,
+                        flags
+                    }
+                );
 
                 const heartRateIs16Bits =
                     (flags & 0x01) !== 0;

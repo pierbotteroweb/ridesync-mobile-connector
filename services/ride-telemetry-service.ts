@@ -7,7 +7,7 @@ export class RideTelemetryService {
 
     private subscription: Subscription | null = null
 
-    private stop():void {
+    private stopSubscription():void {
         this.subscription?.unsubscribe()
         this.subscription = null
     }
@@ -32,11 +32,13 @@ export class RideTelemetryService {
     }
 
     finish():void{
-        this.stop()
+        this.stopSubscription()
+        this.telemetrySource.stop();
     }
 
     reset():void{
-        this.stop()
+        this.stopSubscription()
+        this.telemetrySource.stop();
     }
     
 
