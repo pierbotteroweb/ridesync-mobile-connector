@@ -207,6 +207,17 @@ export class BleTelemetrySource implements TelemetrySource {
                     this.heartDevice = null
 
                     useSensorStore.getState().setHeartrate(false)
+
+                    this.latestTelemetry = {
+                        ...this.latestTelemetry,
+                        heartRate: 0
+                    };
+
+                    this.publish(this.latestTelemetry);
+
+                    if (!this.paused) {
+                        void this.startScan();
+                    }
                 }
             )
         
@@ -262,6 +273,17 @@ export class BleTelemetrySource implements TelemetrySource {
 
                 const contactSupported = (flags & 0x04) !== 0;
                 const contactDetected = (flags & 0x02) !== 0;
+
+                if (contactSupported && !contactDetected) {
+                    this.latestTelemetry = {
+                        ...this.latestTelemetry,
+                        heartRate: 0
+                    };
+
+                    this.publish(this.latestTelemetry);
+
+                    return;
+                }
 
                 console.log(
                     "Contato HR:",
