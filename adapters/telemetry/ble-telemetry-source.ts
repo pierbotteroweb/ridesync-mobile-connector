@@ -659,7 +659,7 @@ export class BleTelemetrySource implements TelemetrySource {
 
         if (
             this.paused ||
-            this.heartDevice ||
+            !this.hasMissingSensors() ||
             this.isConnectingSensor()
         ) {
             return;
@@ -674,7 +674,7 @@ export class BleTelemetrySource implements TelemetrySource {
             
             if (
                 !this.paused &&
-                !this.heartDevice &&
+                this.hasMissingSensors() &&
                 !this.isConnectingSensor()
             ) {
                 void this.startScan();
