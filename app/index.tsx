@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
     height: "100%",
     alignItems: "stretch",
     backgroundColor: "black",
-    paddingTop: 30,
+    paddingTop: 60,
   },
 });
